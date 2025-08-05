@@ -1,30 +1,54 @@
 pipeline {
-    agent { label 'windows' }
+  agent any
 
-    environment {
-        OPENAI_API_KEY = credentials('openai-api-key')
+  environment {
+    OPENAI_API_KEY = credentials('openai-api-key')
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        git 'https://github.com/MustafaQadan1/promfoo2025.git'
+      }
     }
 
-    stages {
-        stage('Install Requirements') {
-            steps {
-                bat "pip install openai && npm install -g promptfoo"
-            }
-        }
-
-        stage('Run Promptfoo Tests') {
-            steps {
-                bat 'promptfoo eval promptfooconfig.yaml --output json > prompt_results.json || exit /b 1'
-            }
-        }
+    stage('Set Up Virtual Environment') {
+      steps {
+        bat 'python -m venv venv'
+      }
     }
 
-    post {
-        always {
-            archiveArtifacts artifacts: 'prompt_results.json', allowEmptyArchive: true
-        }
-        failure {
-            echo 'Promptfoo tests failed. Check prompt_results.json for details.'
-        }
+    stage('Install Dependencies') {
+      steps {
+        bat '.\\venv\\Scripts\\activate && pip install -r requirements.txt'
+      }
     }
+
+    stage('Run Flask App in Background') {
+      steps {
+        bat ''
+        '
+        .\\venv\\ Scripts\\ activate
+        start / B python chatbot_api.py ''
+        '
+        sleep time: 10, unit: 'SECONDS' // Give the app time to boot
+      }
+    }
+
+    stage('Run Promptfoo Tests') {
+      steps {
+        bat ''
+        '
+        .\\venv\\ Scripts\\ activate
+        promptfoo eval--config promptfooconfig.yaml ''
+        '
+      }
+    }
+  }
+
+  post {
+    always {
+      echo 'Pipeline finished.'
+    }
+  }
 }
