@@ -24,26 +24,24 @@ pipeline {
       }
     }
 
-    stage('Run Flask App in Background') {
-      steps {
-        bat ''
-        '
-        .\\venv\\ Scripts\\ activate
-        start / B python chatbot_api.py ''
-        '
-        sleep time: 10, unit: 'SECONDS' // Give the app time to boot
-      }
-    }
+        stage('Run Flask App in Background') {
+        steps {
+            bat """
+            .\\venv\\Scripts\\activate
+            start /B python chatbot_api.py
+            """
+            sleep time: 10, unit: 'SECONDS'
+        }
+        }
 
-    stage('Run Promptfoo Tests') {
-      steps {
-        bat ''
-        '
-        .\\venv\\ Scripts\\ activate
-        promptfoo eval--config promptfooconfig.yaml ''
-        '
-      }
-    }
+        stage('Run Promptfoo Tests') {
+        steps {
+            bat """
+            .\\venv\\Scripts\\activate
+            promptfoo eval --config promptfooconfig.yaml
+            """
+        }
+        }
   }
 
   post {
