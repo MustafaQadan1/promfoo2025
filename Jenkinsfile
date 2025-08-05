@@ -7,10 +7,16 @@ pipeline {
 
   stages {
     stage('Checkout') {
-      steps {
-        git 'https://github.com/MustafaQadan1/promfoo2025.git'
-      }
-    }
+        steps {
+            checkout([
+            $class: 'GitSCM',
+            branches: [[name: 'refs/heads/main']],
+            doGenerateSubmoduleConfigurations: false,
+            extensions: [],
+            userRemoteConfigs: [[url: 'https://github.com/MustafaQadan1/promfoo2025.git']]
+            ])
+        }
+        }
 
     stage('Set Up Virtual Environment') {
       steps {
