@@ -1,9 +1,9 @@
 pipeline {
   agent any
 
-  environment {
-    // OPENAI_API_KEY = credentials('openai-api-key')
-  }
+//   environment {
+//     OPENAI_API_KEY = credentials('openai-api-key')
+//   }
 
   stages {
     stage('Checkout') {
